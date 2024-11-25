@@ -1,0 +1,70 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: hoth
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: hoth
+  name: star-destroyer
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      org: empire
+      class: star-destroyer
+      app.kubernetes.io/name: star-destroyer
+  template:
+    metadata:
+      labels:
+        org: empire
+        class: star-destroyer
+        app.kubernetes.io/name: star-destroyer
+    spec:
+      containers:
+        - name: starship
+          image: docker.io/tgraf/netperf
+          command: ["/bin/sh"]
+          args: ["-c", "while true; do curl -s -XPOST deathstar.endor.svc.cluster.local/v1/request-landing; sleep 1; done"]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: hoth
+  name: x-wing
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      org: alliance
+      class: x-wing
+      app.kubernetes.io/name: x-wing
+  template:
+    metadata:
+      labels:
+        org: alliance
+        class: x-wing
+        app.kubernetes.io/name: x-wing
+    spec:
+      containers:
+        - name: starship
+          image: docker.io/tgraf/netperf
+          command: ["/bin/sh"]
+          args: ["-c", "while true; do curl -s -XPOST deathstar.endor.svc.cluster.local/v1/request-landing; sleep 1; done"]
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  namespace: hoth
+  name: millenium-falcon
+  labels:
+    class: light-freighter
+    app.kubernetes.io/name: millenium-falcon
+spec:
+  containers:
+    - name: starship
+      image: docker.io/tgraf/netperf
+      command: ["/bin/sh"]
+      args: ["-c", "while true; do curl -s -XPOST deathstar.endor.svc.cluster.local/v1/request-landing; sleep 1; done"]

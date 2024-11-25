@@ -1,0 +1,38 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  namespace: endor
+  name: allow-all
+spec:
+  endpointSelector:
+    {}
+  ingress:
+    - fromEntities:
+      - all
+  egress:
+    - toEntities:
+      - all
+root@ciliumvm:/home/ciliumtp/policies# cat cluster-scope.yaml
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: kind-cluster-policy
+spec:
+  endpointSelector: {} # Applies to all pods in the cluster
+  egress:
+    # Allow DNS traffic
+    - toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP
+          rules:
+            dns:
+              - matchPattern: "*"
+
+    # Allow HTTPS traffic to specific FQDN
+    - toFQDNs:
+        - matchName: google.com
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
